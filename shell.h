@@ -10,6 +10,6 @@
 #include <string.h>
 #include <errno.h>
 
-extern char **environ;
+void run_cmd(char *cmd, char *argv0);
 
 #endif
