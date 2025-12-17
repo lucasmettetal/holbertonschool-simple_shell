@@ -20,7 +20,7 @@ void run_cmd(char *cmd, char *argv0)
 	{
 		execve(cmd, args, environ);
 
-		/* Si execve échoue : format type /bin/sh */
+		/** Si execve échoue : format type /bin/sh */
 		fprintf(stderr, "%s: 1: %s: not found\n", argv0, cmd);
 		_exit(127);
 	}
