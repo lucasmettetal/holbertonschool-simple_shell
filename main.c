@@ -1,8 +1,15 @@
 #include "shell.h"
-/* main.c: main function for the simple shell program.
- * It initializes the shell state, reads input lines,
- * extracts commands, and executes them in a loop.
+
+/**
+ * main - entry point for the simple shell program.
+ * It initializes the shell state, enters a loop to read and execute commands,
+ * and handles interactive prompts.
+ * @argc: argument count
+ * @argv: argument vector
+ * @envp: environment variables
+ * Return: exit status of the shell
  */
+
 int main(int argc, char **argv, char **envp)
 {
 	t_shell sh;

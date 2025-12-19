@@ -11,6 +11,17 @@
 #include <string.h>
 #include <errno.h>
 
+/**
+ * struct s_shell - structure to hold shell state information.
+ * @line: current input line
+ * @cap: capacity of the input line buffer
+ * @status: last command exit status
+ * @lineno: current line number
+ * @interactive: flag indicating if shell is in interactive mode
+ * @prog: program name (argv[0])
+ * @env: environment variables
+ */
+
 typedef struct s_shell
 {
 	char *line;

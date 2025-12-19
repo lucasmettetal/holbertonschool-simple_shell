@@ -1,5 +1,13 @@
 #include "shell.h"
 
+/**
+ * run_cmd - executes a command using fork and execve.
+ * It creates a child process to run the command and waits for it to finish.
+ * @cmd: the command to execute
+ * @sh: pointer to the shell state
+ * Return: exit status of the command
+ */
+
 int run_cmd(char *cmd, t_shell *sh)
 {
 	pid_t pid;
