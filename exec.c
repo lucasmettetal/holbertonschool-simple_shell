@@ -1,6 +1,6 @@
 #include "shell.h"
 
-void run_cmd(char *cmd, char *argv0)
+int run_cmd(char *cmd, t_shell *sh)
 {
 	pid_t pid;
 	int status;
@@ -13,18 +13,29 @@ void run_cmd(char *cmd, char *argv0)
 	if (pid < 0)
 	{
 		perror("fork");
-		return;
+		sh->status = 1;
+		return (1);
 	}
 
 	if (pid == 0)
 	{
-		execve(cmd, args, environ);
+		execve(cmd, args, sh->env);
 
-		/** Si execve échoue : format type /bin/sh */
-		fprintf(stderr, "%s: 1: %s: not found\n", argv0, cmd);
+		/* execve failed */
+		fprintf(stderr, "%s: %lu: %s: not found\n",
+				sh->prog, sh->lineno, cmd);
 		_exit(127);
 	}
 
 	if (waitpid(pid, &status, 0) < 0)
+	{
 		perror("waitpid");
+		sh->status = 1;
+		return (1);
+	}
+
+	if (WIFEXITED(status))
+		sh->status = WEXITSTATUS(status);
+
+	return (sh->status);
 }
