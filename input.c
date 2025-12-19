@@ -1,7 +1,7 @@
 #include "shell.h"
-/* input.c: functions for reading and parsing input lines
- * from standard input.
- */
+
+/* strip_newline: removes the trailing newline character from a string */
+
 static void strip_newline(char *s)
 {
 	size_t n;
