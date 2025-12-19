@@ -36,37 +36,3 @@ ssize_t read_line(char **line, size_t *cap)
 	strip_newline(*line);
 	return (nread);
 }
-
-/**
- * get_cmd - extracts the first command from a line of input.
- * It skips leading spaces/tabs and cuts the string at the first space/tab.
- * @line: the input line
- * Return: pointer to the command string, or NULL if no command found
- */
-
-char *get_cmd(char *line)
-{
-	char *p;
-
-	if (!line)
-		return (NULL);
-
-	p = line;
-
-	/* skip leading spaces/tabs */
-	while (*p == ' ' || *p == '\t')
-		p++;
-
-	if (*p == '\0')
-		return (NULL);
-
-	/* cut at first space/tab */
-	line = p;
-	while (*p && *p != ' ' && *p != '\t')
-		p++;
-
-	if (*p)
-		*p = '\0';
-
-	return (line);
-}

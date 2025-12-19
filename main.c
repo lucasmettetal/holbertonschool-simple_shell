@@ -1,20 +1,17 @@
 #include "shell.h"
 
 /**
- * main - entry point for the simple shell program.
- * It initializes the shell state, enters a loop to read and execute commands,
- * and handles interactive prompts.
- * @argc: argument count
- * @argv: argument vector
- * @envp: environment variables
- * Return: exit status of the shell
+ * main - Entry point for the simple shell program.
+ * @argc: Argument count
+ * @argv: Argument vector
+ * @envp: Environment variables
+ *
+ * Return: Exit status of the shell.
  */
-
 int main(int argc, char **argv, char **envp)
 {
 	t_shell sh;
 	ssize_t nread;
-	char *cmd;
 
 	(void)argc;
 	sh.line = NULL;
@@ -40,11 +37,12 @@ int main(int argc, char **argv, char **envp)
 
 		sh.lineno++;
 
-		cmd = get_cmd(sh.line);
-		if (!cmd)
+		/* Skip empty line */
+		if (sh.line[0] == '\0')
 			continue;
 
-		run_cmd(cmd, &sh);
+		/* IMPORTANT: pass full line (command + args) */
+		run_cmd(sh.line, &sh);
 	}
 
 	free(sh.line);

@@ -38,9 +38,10 @@ void print_prompt(void);
 
 /* Input */
 ssize_t read_line(char **line, size_t *cap);
-char *get_cmd(char *line);
+static void strip_newline(char *s);
 
 /* Exec */
 int run_cmd(char *cmd, t_shell *sh);
+char **split_line(char *line);
 
 #endif
