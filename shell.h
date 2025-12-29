@@ -46,4 +46,8 @@ int run_cmd(char *cmd, t_shell *sh);
 char **parse_args(char *line);
 void free_args(char **args);
 
+/* path */
+char *get_path(char **env);
+char *find_in_path(char *cmd, char **env);
+
 #endif
