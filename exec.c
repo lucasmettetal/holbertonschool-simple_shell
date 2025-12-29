@@ -49,7 +49,6 @@ int run_cmd(char *line, t_shell *sh)
 		free(argv);
 		return (sh->status);
 	}
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -58,7 +57,6 @@ int run_cmd(char *line, t_shell *sh)
 		sh->status = 1;
 		return (1);
 	}
-
 	if (pid == 0)
 	{
 		execve(argv[0], argv, sh->env);
@@ -68,7 +66,6 @@ int run_cmd(char *line, t_shell *sh)
 				sh->prog, sh->lineno, argv[0]);
 		_exit(127);
 	}
-
 	if (waitpid(pid, &status, 0) < 0)
 	{
 		perror("waitpid");
@@ -76,9 +73,7 @@ int run_cmd(char *line, t_shell *sh)
 		sh->status = 1;
 		return (1);
 	}
-
 	free(argv);
-
 	if (WIFEXITED(status))
 		sh->status = WEXITSTATUS(status);
 
