@@ -37,11 +37,7 @@ int main(int argc, char **argv, char **envp)
 
 		sh.lineno++;
 
-		/* Skip empty line */
-		if (sh.line[0] == '\0')
-			continue;
-
-		/* IMPORTANT: pass full line (command + args) */
+		/* run_cmd handles empty/space-only lines */
 		run_cmd(sh.line, &sh);
 	}
 

@@ -1,45 +1,32 @@
 #include "shell.h"
 
 /**
- * split_line - Split a line into tokens (argv style).
- * @line: Input line (modified in place).
- *
- * Return: NULL-terminated array of tokens, or NULL on failure.
+ * split_line - Split a command line into arguments using strtok.
+ * @line: The command line string. Modified in place.
+ * Return: A NULL-terminated array of argument strings.
  */
-char **split_line(char *line)
+
+static char **split_line(char *line)
 {
-	size_t cap = 8, i = 0;
-	char **argv, **tmp;
+	char **argv;
+	size_t i = 0;
 	char *tok;
 
 	if (!line)
 		return (NULL);
 
-	argv = malloc(sizeof(char *) * cap);
+	/* max 64 args for 0.1+ (no realloc) */
+	argv = malloc(sizeof(char *) * 65);
 	if (!argv)
 		return (NULL);
 
 	tok = strtok(line, " \t");
-	while (tok)
+	while (tok && i < 64)
 	{
 		argv[i++] = tok;
-
-		if (i + 1 >= cap)
-		{
-			cap *= 2;
-			tmp = realloc(argv, sizeof(char *) * cap);
-			if (!tmp)
-			{
-				free(argv);
-				return (NULL);
-			}
-			argv = tmp;
-		}
-
 		tok = strtok(NULL, " \t");
 	}
 	argv[i] = NULL;
-
 	return (argv);
 }
 
@@ -76,6 +63,7 @@ int run_cmd(char *line, t_shell *sh)
 	{
 		execve(argv[0], argv, sh->env);
 
+		/* execve failed */
 		fprintf(stderr, "%s: %lu: %s: not found\n",
 				sh->prog, sh->lineno, argv[0]);
 		_exit(127);

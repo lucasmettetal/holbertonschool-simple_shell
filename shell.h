@@ -43,4 +43,8 @@ ssize_t read_line(char **line, size_t *cap);
 int run_cmd(char *cmd, t_shell *sh);
 char **split_line(char *line);
 
+/* parser */
+char **parse_args(char *line);
+void free_args(char **args);
+
 #endif
