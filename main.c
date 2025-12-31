@@ -37,7 +37,13 @@ int main(int argc, char **argv, char **envp)
 
 		sh.lineno++;
 
-		/* run_cmd handles empty/space-only lines */
+		if (strcmp(sh.line, "exit") == 0 ||
+			strcmp(sh.line, "exit ") == 0)
+		{
+			free(sh.line);
+			exit(sh.status);
+		}
+
 		run_cmd(sh.line, &sh);
 	}
 

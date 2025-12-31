@@ -50,4 +50,8 @@ void free_args(char **args);
 char *get_path(char **env);
 char *find_in_path(char *cmd, char **env);
 
+/* builtins */
+
+int handle_exit(char *line, t_shell *sh);
+
 #endif
