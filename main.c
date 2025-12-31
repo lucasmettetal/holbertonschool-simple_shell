@@ -37,11 +37,27 @@ int main(int argc, char **argv, char **envp)
 
 		sh.lineno++;
 
+		/* builtin exit */
 		if (strcmp(sh.line, "exit") == 0 ||
 			strcmp(sh.line, "exit ") == 0)
 		{
 			free(sh.line);
 			exit(sh.status);
+		}
+
+		/* builtin env */
+		if (strcmp(sh.line, "env") == 0)
+		{
+			int i = 0;
+
+			while (sh.env[i])
+			{
+				write(STDOUT_FILENO, sh.env[i],
+					  strlen(sh.env[i]));
+				write(STDOUT_FILENO, "\n", 1);
+				i++;
+			}
+			continue;
 		}
 
 		run_cmd(sh.line, &sh);
