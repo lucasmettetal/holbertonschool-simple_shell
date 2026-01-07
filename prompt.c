@@ -7,5 +7,6 @@
 
 void print_prompt(void)
 {
-	write(STDOUT_FILENO, "#cisfun$ ", 9);
+	const char *prompt = "#(ಠ_ಠ)$ ";
+	write(STDOUT_FILENO, prompt, strlen(prompt));
 }

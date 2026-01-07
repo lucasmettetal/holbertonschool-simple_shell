@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89
-SRC = main.c prompt.c input.c exec.c path.c parser.c builtins.c
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -Wno-trigraphs
+SRC = main.c prompt.c input.c exec.c path.c parser.c builtins.c fun.c
 OBJ = $(SRC:.c=.o)
 NAME = hsh
 

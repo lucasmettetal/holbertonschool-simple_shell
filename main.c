@@ -41,6 +41,10 @@ int main(int argc, char **argv, char **envp)
 		if (handle_exit(sh.line, &sh))
 			continue;
 
+		/* handle troll art */
+		if (handle_troll(sh.line))
+			continue;
+
 		/* builtin env */
 		if (strcmp(sh.line, "env") == 0)
 		{
