@@ -62,7 +62,7 @@ drwxr-xr-x  2 user user  4096 Jan  7 10:00 .
 
 - **`main.c`**  
   Entry point and main shell loop.  
-  Initializes the shell state (`t_shell` structure), detects interactive mode using `isatty()`, calls `print_prompt()` when needed, reads input via `read_line()`, handles built-in commands `exit` and `env` **directly in the main loop**, and dispatches external commands to `run_cmd()`.
+  Initializes the shell state (`t_shell` structure), detects interactive mode using `isatty()`, calls `print_prompt()` when needed, reads input via `read_line()`, handles built-in commands by calling `handle_exit()` for `exit` and implementing `env` directly, and dispatches external commands to `run_cmd()`.
 
 - **`prompt.c`**  
   Contains `print_prompt()` which writes the shell prompt (`#cisfun$`) to standard output in interactive mode.
@@ -72,7 +72,7 @@ drwxr-xr-x  2 user user  4096 Jan  7 10:00 .
 
 - **`exec.c`**  
   Contains `run_cmd()` which handles external command execution.  
-  Includes an internal static function `split_line()` that tokenizes the command line using `strtok()`.  
+  Uses `parse_args()` from `parser.c` to tokenize the command line into arguments.  
   Resolves command paths (direct path or via `find_in_path()`), forks a child process, executes via `execve()`, and waits for the child using `waitpid()`.
 
 - **`path.c`**  
@@ -81,11 +81,13 @@ drwxr-xr-x  2 user user  4096 Jan  7 10:00 .
 
 - **`parser.c`**  
   Contains `parse_args()` and `free_args()` for command line tokenization.  
-  **Note**: Currently compiled but not used. `exec.c` uses its own internal `split_line()` function instead.
+  Splits the input line into a NULL-terminated argument array by identifying separators (spaces and tabs).  
+  Called by `exec.c` to prepare arguments for `execve()`.
 
 - **`builtins.c`**  
-  Contains `handle_exit()` for builtin command management.  
-  **Note**: Currently compiled but not called. Built-in commands are handled directly in `main.c` for simplicity.
+  Contains `handle_exit()` which implements the `exit` builtin command.  
+  When the user types `exit`, it frees resources and terminates the shell with the last command's exit status.  
+  Called by `main.c` during command processing.
 
 - **`shell.h`**  
   Header file with the `t_shell` structure definition, all function prototypes, and required system includes (`stdio.h`, `stdlib.h`, `unistd.h`, `string.h`, `sys/types.h`, `sys/wait.h`, `errno.h`).
@@ -97,13 +99,13 @@ All shell state is stored in the `t_shell` structure to avoid global variables:
 ```c
 typedef struct s_shell
 {
-	char *line;          /* Input line buffer */
-	size_t cap;          /* Buffer capacity */
-	int status;          /* Last command exit status */
-	unsigned long lineno;/* Line number for error reporting */
-	int interactive;     /* Interactive mode flag (0 or 1) */
-	char *prog;          /* Program name (argv[0]) */
-	char **env;          /* Environment variables (envp) */
+char *line;          /* Input line buffer */
+size_t cap;          /* Buffer capacity */
+int status;          /* Last command exit status */
+unsigned long lineno;/* Line number for error reporting */
+int interactive;     /* Interactive mode flag (0 or 1) */
+char *prog;          /* Program name (argv[0]) */
+char **env;          /* Environment variables (envp) */
 } t_shell;
 ```
 
@@ -137,8 +139,8 @@ holbertonschool-simple_shell/
 ├── input.c            # Input handling with getline()
 ├── exec.c             # Command execution (fork/execve/wait)
 ├── path.c             # PATH environment variable handling
-├── parser.c           # Alternative parser (compiled but not used)
-├── builtins.c         # Alternative builtins (compiled but not used)
+├── parser.c           # Command line tokenization
+├── builtins.c         # Built-in commands implementation
 └── man/               # Manual files
 ```
 

@@ -1,1 +1,74 @@
-après
+.TH HSH 1 "January 2026" "Version 1.0" "Simple Shell Manual"
+.SH NAME
+hsh \- simple UNIX command line interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX command interpreter that reads commands from standard input and executes them.
+.PP
+This shell is a minimalist implementation of a command line interpreter, created as an educational project.
+.SH INVOCATION
+The shell can be invoked interactively or non-interactively.
+.PP
+If standard input is not connected to a terminal, the shell reads and executes commands from its input stream.
+If standard input is connected to a terminal, the shell displays a prompt and waits for user input.
+.SH COMMAND EXECUTION
+After receiving a command, the shell tokenizes it into words using spaces and tabs as delimiters.
+The first word is treated as the command name and the remaining words as arguments.
+.PP
+The shell then performs the following actions:
+.RS
+.IP \(bu 2
+If the command is a built-in, it is executed in the current process.
+.IP \(bu 2
+Otherwise, the shell searches for the command in the directories listed in the PATH environment variable.
+.IP \(bu 2
+If found, the shell forks a child process and executes the command using execve().
+.IP \(bu 2
+If not found, an error message is printed.
+.RE
+.SH BUILT-IN COMMANDS
+The following built-in commands are supported:
+.TP
+.B exit
+Exit the shell with the status of the last executed command.
+.TP
+.B env
+Print the current environment variables.
+.SH PATH SEARCH
+When locating a command, the shell searches the directories listed in the PATH environment variable, in order.
+.SH ENVIRONMENT
+.TP
+.B PATH
+A colon-separated list of directories in which the shell looks for executable commands.
+.SH EXIT STATUS
+The shell exits with the status of the last executed command.
+Commands that cannot be found return an exit status of 127.
+.SH EXAMPLES
+.PP
+Interactive mode:
+.RS
+.nf
+$ ./hsh
+#cisfun$ /bin/ls
+file1 file2 file3
+#cisfun$ exit
+.fi
+.RE
+.PP
+Non-interactive mode:
+.RS
+.nf
+$ echo "/bin/ls" | ./hsh
+file1 file2 file3
+.fi
+.RE
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1),
+.BR dash (1)
+.SH AUTHORS
+See the AUTHORS file in the project repository.
+.SH COPYRIGHT
+This is an educational project.
