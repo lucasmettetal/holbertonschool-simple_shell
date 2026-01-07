@@ -54,4 +54,8 @@ char *find_in_path(char *cmd, char **env);
 
 int handle_exit(char *line, t_shell *sh);
 
+/*fun*/
+
+int handle_troll(char *line);
+
 #endif
