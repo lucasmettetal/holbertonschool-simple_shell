@@ -37,13 +37,9 @@ int main(int argc, char **argv, char **envp)
 
 		sh.lineno++;
 
-		/* builtin exit */
-		if (strcmp(sh.line, "exit") == 0 ||
-			strcmp(sh.line, "exit ") == 0)
-		{
-			free(sh.line);
-			exit(sh.status);
-		}
+		/* handle builtin exit */
+		if (handle_exit(sh.line, &sh))
+			continue;
 
 		/* builtin env */
 		if (strcmp(sh.line, "env") == 0)

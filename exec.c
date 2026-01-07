@@ -1,35 +1,6 @@
 #include "shell.h"
 
 /**
- * split_line - Split a command line into arguments.
- * @line: The command line string, modified in place.
- * Return: A NULL-terminated array of argument strings.
- */
-
-static char **split_line(char *line)
-{
-	char **argv;
-	size_t i = 0;
-	char *tok;
-
-	if (!line)
-		return (NULL);
-
-	argv = malloc(sizeof(char *) * 65);
-	if (!argv)
-		return (NULL);
-
-	tok = strtok(line, " \t");
-	while (tok && i < 64)
-	{
-		argv[i++] = tok;
-		tok = strtok(NULL, " \t");
-	}
-	argv[i] = NULL;
-	return (argv);
-}
-
-/**
  * print_not_found - Print command not found error message.
  * @sh: shell state
  * @cmd: command name
@@ -120,22 +91,23 @@ static int fork_and_exec(char *cmd_path, char **argv, t_shell *sh)
 }
 
 /**
- * run_cmd - execute a command line with arguments and PATH handling
- * @line: input line (command + arguments), modified in place
+ * run_cmd - Run a command line.
+ * @line: command line
  * @sh: shell state
  *
- * Return: exit status of the executed command
+ * Return: exit status of the command
  */
+
 int run_cmd(char *line, t_shell *sh)
 {
 	char **argv;
 	char *cmd_path = NULL;
 	int need_free = 0;
 
-	argv = split_line(line);
+	argv = parse_args(line);
 	if (!argv || !argv[0])
 	{
-		free(argv);
+		free_args(argv);
 		return (sh->status);
 	}
 
@@ -143,7 +115,7 @@ int run_cmd(char *line, t_shell *sh)
 	{
 		if (need_free)
 			free(cmd_path);
-		free(argv);
+		free_args(argv);
 		return (sh->status);
 	}
 
@@ -151,7 +123,7 @@ int run_cmd(char *line, t_shell *sh)
 
 	if (need_free)
 		free(cmd_path);
-	free(argv);
+	free_args(argv);
 
 	return (sh->status);
 }

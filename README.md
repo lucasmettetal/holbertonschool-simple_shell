@@ -4,13 +4,13 @@ A simple implementation of a UNIX shell in C, created as part of the Holberton S
 
 ## Description
 
-This project is a minimal shell inspired by `/bin/sh`. It can execute simple commands with their full paths. The shell reads commands from standard input, parses them, and executes them using the `fork()` and `execve()` system calls.
+This project is a minimal UNIX shell inspired by `/bin/sh`. It executes commands using absolute/relative paths or searches them via the `PATH` environment variable. The shell reads commands from standard input, parses them, and executes them using the `fork()` and `execve()` system calls.
 
-### Features
+## Features
 
-- **Command execution**: Execute any program available in the filesystem
+- **Command execution**: Execute any program by absolute/relative path or via `PATH` lookup
 - **Interactive & Non-interactive modes**: Works in both interactive mode (with prompt) and piped input
-- **Built-in commands**: Basic support for `exit` (work in progress)
+- **Built-in commands**: `exit` and `env`
 - **Environment preservation**: Passes environment variables to executed commands
 - **Error handling**: Displays error messages matching the format of `/bin/sh`
 
@@ -23,6 +23,8 @@ make
 This will compile the project using `gcc` with the following flags:
 - `-Wall -Werror -Wextra -pedantic -std=gnu89`
 
+Compiled files: `main.c`, `prompt.c`, `input.c`, `exec.c`, `path.c`, `parser.c`, `builtins.c`
+
 ## Usage
 
 ### Interactive Mode
@@ -30,9 +32,15 @@ This will compile the project using `gcc` with the following flags:
 ```bash
 $ ./hsh
 #cisfun$ /bin/ls
-[output of ls]
-#cisfun$ /bin/cat file.txt
-[file contents]
+file1  file2  file3
+#cisfun$ ls
+file1  file2  file3
+#cisfun$ echo "Hello, World!"
+Hello, World!
+#cisfun$ env
+PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/home/user
+...
 #cisfun$ exit
 $
 ```
@@ -41,34 +49,50 @@ $
 
 ```bash
 $ echo "/bin/ls" | ./hsh
-[output of ls]
-```
-
-### Examples
-
-```bash
-$ ./hsh
-#cisfun$ /bin/echo "Hello, World!"
-Hello, World!
-#cisfun$ /bin/pwd
-/path/to/current/directory
-#cisfun$ /bin/whoami
-username
-#cisfun$ exit
+file1  file2  file3
+$ echo "ls -la" | ./hsh
+total 48
+drwxr-xr-x  2 user user  4096 Jan  7 10:00 .
+...
 ```
 
 ## Implementation Details
 
 ### Architecture
 
-- **main.c**: Entry point and main shell loop
-- **prompt.c**: Displays the shell prompt (`#cisfun$`) in interactive mode
-- **input.c**: Reads user input line by line using `getline()`
-- **Input parsing**: Tokenizes input into command and arguments
-- **exec.c**: Handles command execution via `fork()` and `execve()`
-- **shell.h**: Header file with all function prototypes and data structures
+- **`main.c`**  
+  Entry point and main shell loop.  
+  Initializes the shell state (`t_shell` structure), detects interactive mode using `isatty()`, calls `print_prompt()` when needed, reads input via `read_line()`, handles built-in commands `exit` and `env` **directly in the main loop**, and dispatches external commands to `run_cmd()`.
+
+- **`prompt.c`**  
+  Contains `print_prompt()` which writes the shell prompt (`#cisfun$`) to standard output in interactive mode.
+
+- **`input.c`**  
+  Contains `read_line()` which uses `getline()` to read a line from stdin and strips the trailing newline character.
+
+- **`exec.c`**  
+  Contains `run_cmd()` which handles external command execution.  
+  Includes an internal static function `split_line()` that tokenizes the command line using `strtok()`.  
+  Resolves command paths (direct path or via `find_in_path()`), forks a child process, executes via `execve()`, and waits for the child using `waitpid()`.
+
+- **`path.c`**  
+  Contains `get_path()` to extract the `PATH` value from environment variables, and `find_in_path()` to search for executable commands in `PATH` directories.  
+  Used by `exec.c` to resolve commands without `/` in their name.
+
+- **`parser.c`**  
+  Contains `parse_args()` and `free_args()` for command line tokenization.  
+  **Note**: Currently compiled but not used. `exec.c` uses its own internal `split_line()` function instead.
+
+- **`builtins.c`**  
+  Contains `handle_exit()` for builtin command management.  
+  **Note**: Currently compiled but not called. Built-in commands are handled directly in `main.c` for simplicity.
+
+- **`shell.h`**  
+  Header file with the `t_shell` structure definition, all function prototypes, and required system includes (`stdio.h`, `stdlib.h`, `unistd.h`, `string.h`, `sys/types.h`, `sys/wait.h`, `errno.h`).
 
 ### Shell State Structure
+
+All shell state is stored in the `t_shell` structure to avoid global variables:
 
 ```c
 typedef struct s_shell
@@ -77,11 +101,10 @@ typedef struct s_shell
 	size_t cap;          /* Buffer capacity */
 	int status;          /* Last command exit status */
 	unsigned long lineno;/* Line number for error reporting */
-	int interactive;     /* Interactive mode flag */
+	int interactive;     /* Interactive mode flag (0 or 1) */
 	char *prog;          /* Program name (argv[0]) */
-	char **env;          /* Environment variables */
+	char **env;          /* Environment variables (envp) */
 } t_shell;
-
 ```
 
 ## Constraints
@@ -108,12 +131,14 @@ holbertonschool-simple_shell/
 ├── Makefile           # Build configuration
 ├── README.md          # This file
 ├── AUTHORS            # Project authors
-├── shell.h            # Header file with prototypes
-├── main.c             # Main loop
+├── shell.h            # Header file with prototypes and structure
+├── main.c             # Main loop and builtin commands
 ├── prompt.c           # Prompt display
-├── input.c            # Input handling
-├── parser.c           # Command parsing
-├── exec.c             # Command execution
+├── input.c            # Input handling with getline()
+├── exec.c             # Command execution (fork/execve/wait)
+├── path.c             # PATH environment variable handling
+├── parser.c           # Alternative parser (compiled but not used)
+├── builtins.c         # Alternative builtins (compiled but not used)
 └── man/               # Manual files
 ```
 
@@ -151,12 +176,16 @@ When a command is not found or cannot be executed, the shell displays an error m
 ./hsh: 1: command_name: not found
 ```
 
-Where the number (1 in this example) represents the line number at which the error occurred.
+Where:
+- `./hsh` is the program name (`argv[0]`)
+- `1` is the line number (input line counter)
+- `command_name` is the command that was not found
+- Exit status is set to `127` for "command not found" errors
 
 ## Authors
 
-Enzo RICHARD
-Lucas METTETAL
+- Lucas Mettetal (GitHub: @lucasmettetal)
+- Enzo Richard (GitHub: @Nzoowdev)
 
 ## Acknowledgments
 
