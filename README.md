@@ -2,6 +2,10 @@
 
 A simple implementation of a UNIX shell in C, created as part of the Holberton School curriculum.
 
+## Flowchart
+
+![Flowchart](Asset/flowchart.1.0.png)
+
 ## Description
 
 This project is a minimal UNIX shell inspired by `/bin/sh`. It executes commands using absolute/relative paths or searches them via the `PATH` environment variable. The shell reads commands from standard input, parses them, and executes them using the `fork()` and `execve()` system calls.
