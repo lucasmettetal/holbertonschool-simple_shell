@@ -10,7 +10,7 @@ int handle_troll(char *line)
 	if (!line)
 		return (0);
 
-	if (strcmp(line, "lucas") != 0)
+	if (strcmp(line, "Bouclette") != 0)
 		return (0);
 
 	fd = open("Asset/lucas.ascii", O_RDONLY);
