@@ -130,18 +130,20 @@ The following system calls and standard library functions are permitted:
 
 ```
 holbertonschool-simple_shell/
-├── Makefile           # Build configuration
-├── README.md          # This file
-├── AUTHORS            # Project authors
-├── shell.h            # Header file with prototypes and structure
-├── main.c             # Main loop and builtin commands
-├── prompt.c           # Prompt display
-├── input.c            # Input handling with getline()
-├── exec.c             # Command execution (fork/execve/wait)
-├── path.c             # PATH environment variable handling
-├── parser.c           # Command line tokenization
-├── builtins.c         # Built-in commands implementation
-└── man/               # Manual files
+├── AUTHORS
+├── Makefile
+├── README.md
+├── shell.h
+├── main.c
+├── prompt.c
+├── input.c
+├── exec.c
+├── path.c
+├── parser.c
+├── builtins.c
+├── man/
+│   └── hsh.1
+
 ```
 
 ## Compilation & Testing
@@ -186,8 +188,8 @@ Where:
 
 ## Authors
 
-- Lucas Mettetal (GitHub: @lucasmettetal)
-- Enzo Richard (GitHub: @Nzoowdev)
+- Lucas Mettetal <https://github.com/lucasmettetal>
+- Enzo Richard <https://github.com/Nzoowdev>
 
 ## Acknowledgments
 
