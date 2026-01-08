@@ -1,3 +1,5 @@
+[![man-page](https://img.shields.io/badge/man%20page-en-red)](man/hsh.1)
+
 # Simple Shell
 
 A simple implementation of a UNIX shell in C, created as part of the Holberton School curriculum.
